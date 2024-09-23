@@ -5,6 +5,9 @@ from django.views.generic import TemplateView, CreateView, UpdateView
 from .models import *
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
+import logging
+
+logger = logging.getLogger(__name__)
 
 redirect_authenticated_user = True
 
