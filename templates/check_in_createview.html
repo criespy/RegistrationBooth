@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    
+</div>
+<br>
+<div class="container shadow px-4 p-4">
+    <h2>Check In Tamu {{ object.slug }}</h2>
+    {% if object.sudah_checkin %}<h4>Warning: QR Sudah pernah discan</h4>{% endif %}
+    <div class="row">
+        <div class="col p-3 text-center {% if object.sudah_checkin %}bg-danger{% endif %}">
+            <img src="{{ object.qr_code.url }}" max-width="100%" width="280px" height="280px" class="rounded">
+        </div>
+        <div class="col p-3">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <table class="table table-borderless">
+                    <thead>
+                    
+                    </thead>
+                    <tbody>
+                        {% for field in form %}
+                        <tr>
+                            <td>
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {% if field.field.required %}
+                                    <span class="required">*</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ field }}
+                                {% if field.help_text %}
+                                    <br><small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% if field.name == 'path_QR' and form.path_QR.value %}
+                                    <img src="{{ MEDIA_URL }}/media/images/qrcodes/{{ object.path_QR }}.png" alt="{{ form.path_QR.value }}" width="34">
+                                {% endif %}
+                            </td>
+                          </tr>
+                          {% if field.errors %}
+                            <tr>
+                              <td></td>
+                              <td>
+                                <div class="alert alert-danger">
+                                  {% for error in field.errors %}
+                                    <p>{{ error }}</p>
+                                  {% endfor %}
+                                </div>
+                              </td>
+                            </tr>
+                          {% endif %}
+                        {% endfor %}
+                    </tbody>
+                    <tr>
+                        <th>
+                           
+                        </th>
+                        <td class="text-end">
+                            <button type="submit" class="btn btn-success" {% if object.sudah_checkin %}disabled{% endif %}>Check In</button>
+                            <a href="{% url 'scanner' %}"  class="btn btn-danger">Cancel</a>
+                        </td>
+                    </tr>
+                </table>
+            
+        </div>
+        
+        </form>
+    </div>
+</div>
+<script>
+    let nomor_apar = document.getElementById('id_nomor').value;
+    function isiQR(){
+        nomor_apar = document.getElementById('id_nomor').value;
+        document.getElementById('id_path_QR').value = 'fln-apar-' + nomor_apar;
+    }
+    function isiSlug(){
+        document.getElementById('id_slug').value = 'fln-apar-' + nomor_apar;
+    }
+    isiQR();
+    isiSlug();
+</script>
+{% endblock content %}

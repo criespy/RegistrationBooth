@@ -6,6 +6,7 @@ from PIL import Image, ImageDraw
 import random
 import os
 from django.conf import settings
+from django.utils.text import slugify
 
 def generate_random_number():
         return random.randrange(10000000, 100000000)
@@ -31,6 +32,8 @@ class Tamu(models.Model):
     meja = models.ForeignKey(Meja, on_delete=models.CASCADE)
     qr_code = models.ImageField(upload_to=get_qr_code_upload_path, blank=True)
     rand_code = models.CharField(max_length=8, unique=True, blank=True)
+    slug = models.SlugField(max_length=8, blank=True)
+    sudah_checkin = models.BooleanField()
 
     class Meta:
         verbose_name = 'Tamu'
@@ -52,8 +55,11 @@ class Tamu(models.Model):
         canvas = Image.new('RGB', (qr_image.size), 'white')
         draw = ImageDraw.Draw(canvas)
         canvas.paste(qr_image)
+
         if not self.rand_code:
             self.rand_code = generate_random_number()
+        if not self.slug:
+            self.slug = slugify(self.rand_code)
 
         #Save ke memory
         buffer = BytesIO()
@@ -62,6 +68,7 @@ class Tamu(models.Model):
 
         #Save ke DB
         self.qr_code.save(file_name, File(buffer), save=False)
+        
         super().save(*args, **kwargs)
 
 class CheckIn(models.Model):
