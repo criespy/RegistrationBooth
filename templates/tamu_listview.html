@@ -15,7 +15,7 @@
         </thead>
         <tbody>
             {% for tamu in tamu_list %}
-            <tr>
+            <tr {% if tamu.sudah_checkin %}class="bg-success"{% endif %}>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ tamu.nama }}</td>
                 <td>{{ tamu.instansi }}</td>
