@@ -31,7 +31,7 @@
     <script src="{% static 'js/html5-qrcode.min.js' %}"></script>
     <script>
       function onScanSuccess(decodedText, decodedResult) {
-        decodedResult = 'scan/' + decodedText;
+        decodedResult = 'checkin/' + decodedText;
         location.replace(decodedResult);
       }
 
