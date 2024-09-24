@@ -13,17 +13,18 @@ redirect_authenticated_user = True
 
 class RegistrationLoginView(LoginView):
     template_name = 'login.html'
+    success_url = '/'
 
 class RegistrationLogoutView(LogoutView):
-    def logout_view(selfrequest):
-        logout(request)
-    template_name_= 'login.html'
-    next_page = 'login'
+    template_name = 'login.html'
+    next_page = '/'
 
-class Scanner(TemplateView):
+class Scanner(LoginRequiredMixin, TemplateView):
+    login_url = 'login'
     template_name = 'scan.html'
 
-class CheckInView(UpdateView):
+class CheckInView(LoginRequiredMixin, UpdateView):
+    login_url = 'login'
     model = Tamu
     template_name = 'check_in_createview.html'
     fields = ['instansi', 'nama', 'meja', 'sudah_checkin']
@@ -45,7 +46,8 @@ class CheckInView(UpdateView):
         context['path_without_query_string'] = self.request.path
         return context
     
-class TamuListView(ListView):
+class TamuListView(LoginRequiredMixin, ListView):
+    login_url = 'login'
     model = Tamu
     template_name = 'tamu_listview.html'
     fields = '__all__'

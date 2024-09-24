@@ -46,7 +46,7 @@
               </li>
               <li class="nav-item">
                 <!--a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a-->
-                <a class="nav-link text-danger" href="">Logout ({{ user.username }})</a>
+                <a class="nav-link text-danger" href="#" onclick="document.getElementById('logout-form').submit();">Logout ({{ user.username }})</a>
               </li>
             </ul>
           </div>
@@ -60,6 +60,10 @@
         {% block content %}
         {% endblock content %}
     </div>
+    <!-- Hidden logout form -->
+    <form id="logout-form" method="POST" action="{% url 'logout' %}" style="display: none;">
+      {% csrf_token %}
+    </form>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
