@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView, CreateView, UpdateView
+from django.views.generic import TemplateView, CreateView, UpdateView, ListView
 from .models import *
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
@@ -44,3 +44,8 @@ class CheckInView(UpdateView):
         context['current_path'] = os.path.basename(self.request.get_full_path()) #digabung dengan fungsi os untuk mengambil url bagian terakhir saja
         context['path_without_query_string'] = self.request.path
         return context
+    
+class TamuListView(ListView):
+    model = Tamu
+    template_name = 'tamu_listview.html'
+    fields = '__all__'

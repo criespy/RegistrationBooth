@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <h2>Daftar Tamu {{ object.slug }}</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Nama</th>
+                <th>Instansi</th>
+                <th>Meja</th>
+                <th>Checked In</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tamu in tamu_list %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ tamu.nama }}</td>
+                <td>{{ tamu.instansi }}</td>
+                <td>{{ tamu.meja }}</td>
+                <td>{{ tamu.sudah_checkin|yesno:"Sudah,Belum" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No guests available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

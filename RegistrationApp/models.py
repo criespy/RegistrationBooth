@@ -43,7 +43,7 @@ class Tamu(models.Model):
         verbose_name_plural = 'Tamu'
 
     def __str__(self):
-        return f"{self.nama} {self.instansi}"
+        return f"{self.instansi} {self.nama}"
     
     def save(self, *args, **kwargs):
         # Check if an old QR code exists and delete it
