@@ -11,18 +11,18 @@
                 <th>Instansi</th>
                 <th>Meja</th>
                 <th>Checked In</th>
-                <th>QR Code</th>
+                <!--<th>QR Code</th>-->
             </tr>
         </thead>
         <tbody>
             {% for tamu in tamu_list %}
             <tr {% if tamu.sudah_checkin %}class="bg-success"{% endif %}>
                 <td>{{ forloop.counter }}</td>
-                <td>{{ tamu.nama }}</td>
+                <td><a href="{% url 'checkin' tamu.slug %}">{{ tamu.nama }}</a></td>
                 <td>{{ tamu.instansi }}</td>
                 <td>{{ tamu.meja }}</td>
                 <td>{{ tamu.sudah_checkin|yesno:"Sudah,Belum" }}</td>
-                <td><img src="{{ tamu.qr_code.url }}" max-width="100%" width="120px" height="120px" class="rounded"></td>
+                <!--<td><img src="{{ tamu.qr_code.url }}" max-width="100%" width="120px" height="120px" class="rounded"></td>-->
             </tr>
             {% empty %}
             <tr>
