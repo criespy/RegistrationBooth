@@ -2,34 +2,10 @@
 {% load static %}
 {% block content %}
 <div class="container">
-    <h2>Daftar Tamu {{ object.slug }}</h2>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>No.</th>
-                <th>Nama</th>
-                <th>Instansi</th>
-                <th>Meja</th>
-                <th>Checked In</th>
-                <!--<th>QR Code</th>-->
-            </tr>
-        </thead>
-        <tbody>
-            {% for tamu in tamu_list %}
-            <tr {% if tamu.sudah_checkin %}class="bg-success"{% endif %}>
-                <td>{{ forloop.counter }}</td>
-                <td><a href="{% url 'checkin' tamu.slug %}">{{ tamu.nama }}</a></td>
-                <td>{{ tamu.instansi }}</td>
-                <td>{{ tamu.meja }}</td>
-                <td>{{ tamu.sudah_checkin|yesno:"Sudah,Belum" }}</td>
-                <!--<td><img src="{{ tamu.qr_code.url }}" max-width="100%" width="120px" height="120px" class="rounded"></td>-->
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5">No guests available.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <h2>Daftar Tamu</h2>
+    
+        <div id="tamu-list" hx-get="{% url 'tamu-update' %}" hx-trigger="load, every 1s" hx-target="#tamu-list">
+            {% include 'tamu_list_update.html' %}
+       </div>
 </div>
 {% endblock %}

@@ -51,3 +51,7 @@ class TamuListView(LoginRequiredMixin, ListView):
     model = Tamu
     template_name = 'tamu_listview.html'
     fields = '__all__'
+
+def tamu_update_view(request):
+    tamu_list = Tamu.objects.all().order_by('-sudah_checkin')
+    return render(request, 'tamu_list_update.html', {'tamu_list': tamu_list})

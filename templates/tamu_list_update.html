@@ -1,0 +1,21 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>No.</th>
+            <th>Nama</th>
+            <th>Instansi</th>
+            <th>Meja</th>
+            <th>Checked In</th>
+            <!--<th>QR Code</th>-->
+        </tr>
+    </thead>
+{% for tamu in tamu_list %}
+    <tr {% if tamu.sudah_checkin %}class="bg-success"{% endif %}>
+        <td>{{ forloop.counter }}</td>
+        <td><a href="{% url 'checkin' tamu.slug %}">{{ tamu.nama }}</a></td>
+        <td>{{ tamu.instansi }}</td>
+        <td>{{ tamu.meja }}</td>
+        <td>{{ tamu.sudah_checkin|yesno:"Sudah,Belum" }}</td>
+    </tr>
+{% endfor %}
+</table>
