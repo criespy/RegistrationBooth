@@ -53,18 +53,18 @@ class Tamu(models.Model):
             if os.path.exists(file_path):
                 os.remove(file_path)
 
+        #isi rand_code dan slug biar sama
+        if not self.rand_code:
+            self.rand_code = generate_random_number()
+        if not self.slug:
+            self.slug = slugify(self.rand_code)
+
         #Buat QR Code nya
         qr_data = f"FLN_E01_{self.id}"
         qr_image = qrcode.make(self.rand_code)
         canvas = Image.new('RGB', (qr_image.size), 'white')
         draw = ImageDraw.Draw(canvas)
         canvas.paste(qr_image)
-
-        #isi rand_code dan slug biar sama
-        if not self.rand_code:
-            self.rand_code = generate_random_number()
-        if not self.slug:
-            self.slug = slugify(self.rand_code)
 
         #Save ke memory
         buffer = BytesIO()

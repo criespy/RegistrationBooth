@@ -55,3 +55,20 @@ class TamuListView(LoginRequiredMixin, ListView):
 def tamu_update_view(request):
     tamu_list = Tamu.objects.all().order_by('-sudah_checkin')
     return render(request, 'tamu_list_update.html', {'tamu_list': tamu_list})
+
+class TamuCreateView(LoginRequiredMixin, CreateView):
+    login_url = 'login'
+    model = Tamu
+    template_name = 'tamu_form.html'
+    fields = ['instansi', 'nama', 'meja', 'sudah_checkin']
+    success_url = reverse_lazy('list-tamu')
+
+    def get_initial(self):
+        return {'sudah_checkin': False}
+
+class MejaCreateView(LoginRequiredMixin, CreateView):
+    login_url = 'login'
+    model = Meja
+    template_name = 'meja_form.html'
+    fields = ['nomor_meja']
+    success_url = reverse_lazy('list-tamu')

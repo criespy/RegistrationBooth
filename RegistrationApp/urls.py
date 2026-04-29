@@ -9,4 +9,6 @@ urlpatterns = [
     path('login/', views.RegistrationLoginView.as_view(), name='login'),
     path('logout/', views.RegistrationLogoutView.as_view(), name='logout'),
     path('tamu-update/', tamu_update_view, name='tamu-update'),
+    path('tamu-create/', views.TamuCreateView.as_view(), name='tamu-create'),
+    path('meja-create/', views.MejaCreateView.as_view(), name='meja-create'),
 ]
