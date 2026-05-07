@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'event-list' %}">Daftar Event</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ event.nama }}</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            {% if event.cover %}
+            <img src="{{ event.cover.url }}" class="img-fluid rounded shadow" alt="{{ event.nama }}">
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold text-primary">{{ event.nama }}</h1>
+            <p class="lead"><i class="bi bi-calendar-event"></i> {{ event.tanggal|date:"l, d F Y" }} | <i class="bi bi-clock"></i> {{ event.jam|time:"H:i" }} WIB</p>
+            <hr>
+            <div class="d-flex gap-2">
+                <a href="{% url 'tamu-create' %}event/{{ event.pk }}" class="btn btn-success">Tambah Tamu ke Event Ini</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow border-0">
+        <div class="card-header bg-white py-3">
+            <h4 class="mb-0">Daftar Tamu Terdaftar</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nama</th>
+                            <th>Instansi</th>
+                            <th>Meja</th>
+                            <th>Status Check-in</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tamu in event.tamu_list.all %}
+                        <tr class="{% if tamu.sudah_checkin %}row-checked-in{% endif %}">
+                            <td class="fw-bold">{{ tamu.nama|default:"-" }}</td>
+                            <td>{{ tamu.instansi }}</td>
+                            <td><span class="badge bg-info text-dark">Meja {{ tamu.meja.nomor_meja }}</span></td>
+                            <td>
+                                {% if tamu.sudah_checkin %}
+                                <span class="badge bg-success">Sudah Hadir</span>
+                                {% else %}
+                                <span class="badge bg-warning text-dark">Belum Hadir</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4 text-muted">Belum ada tamu yang dialokasikan untuk event ini.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

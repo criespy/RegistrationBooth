@@ -1,21 +1,22 @@
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>No.</th>
-            <th>Nama</th>
-            <th>Instansi</th>
-            <th>Meja</th>
-            <th>Checked In</th>
-            <!--<th>QR Code</th>-->
+<div class="table-responsive mt-3">
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Nama</th>
+                <th>Instansi</th>
+                <th>Meja</th>
+                <th class="text-center">Status</th>
+            </tr>
+        </thead>
+    {% for tamu in tamu_list %}
+        <tr class="{% if tamu.sudah_checkin %}row-checked-in{% endif %}">
+            <td>{{ forloop.counter }}</td>
+            <td><a href="{% url 'checkin' tamu.slug %}" class="text-decoration-none fw-bold">{{ tamu.nama }}</a></td>
+            <td>{{ tamu.instansi }}</td>
+            <td><span class="badge bg-secondary">{{ tamu.meja }}</span></td>
+            <td class="text-center">{{ tamu.sudah_checkin|yesno:"✅ Sudah,❌ Belum" }}</td>
         </tr>
-    </thead>
-{% for tamu in tamu_list %}
-    <tr {% if tamu.sudah_checkin %}class="bg-success"{% endif %}>
-        <td>{{ forloop.counter }}</td>
-        <td><a href="{% url 'checkin' tamu.slug %}">{{ tamu.nama }}</a></td>
-        <td>{{ tamu.instansi }}</td>
-        <td>{{ tamu.meja }}</td>
-        <td>{{ tamu.sudah_checkin|yesno:"Sudah,Belum" }}</td>
-    </tr>
-{% endfor %}
-</table>
+    {% endfor %}
+    </table>
+</div>

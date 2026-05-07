@@ -18,9 +18,33 @@ def get_qr_code_upload_path(instance, filename):
     # This will create a path: 'qr_codes/qr_code_<name>.png'
     return os.path.join('qr_codes')#, f'qr_code_{instance.instansi}_{instance.nama}.png')
 
+class Event(models.Model):
+    nama = models.CharField(max_length=255)
+    tanggal = models.DateField()
+    jam = models.TimeField()
+    cover = models.ImageField(upload_to='event_covers/', blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Event'
+        verbose_name_plural = 'Event'
+
+    def __str__(self):
+        return self.nama
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.cover:
+            img = Image.open(self.cover.path)
+            # Memastikan ukuran 400x400 menggunakan metode resize
+            if img.height != 400 or img.width != 400:
+                output_size = (400, 400)
+                img = img.resize(output_size, Image.LANCZOS)
+                img.save(self.cover.path)
 
 class Meja(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     nomor_meja = models.IntegerField()
+
 
     class Meta:
         verbose_name = 'Meja'
@@ -30,21 +54,33 @@ class Meja(models.Model):
         return f"Meja nomor {self.nomor_meja} "
 
 class Tamu(models.Model):
-    instansi = models.CharField(max_length=128)
+    meja = models.ForeignKey(Meja, on_delete=models.SET_NULL, null=True, blank=True)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    instansi = models.CharField(max_length=128, null=True, blank=True)
     nama = models.CharField(max_length=128, null=True, blank=True)
-    meja = models.ForeignKey(Meja, on_delete=models.CASCADE)
-    qr_code = models.ImageField(upload_to="qr_codes/", blank=True)
-    rand_code = models.CharField(max_length=8, unique=True, blank=True)
-    slug = models.SlugField(max_length=8, blank=True)
-    sudah_checkin = models.BooleanField()
 
     class Meta:
         verbose_name = 'Tamu'
         verbose_name_plural = 'Tamu'
+        unique_together = ('nama', 'instansi')
 
     def __str__(self):
         return f"{self.instansi} {self.nama}"
-    
+
+class Registrasi(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='pendaftaran_list')
+    tamu = models.ForeignKey(Tamu, on_delete=models.CASCADE, related_name='riwayat_event')
+    meja = models.ForeignKey(Meja, on_delete=models.CASCADE)
+    qr_code = models.ImageField(upload_to="qr_codes/", blank=True)
+    rand_code = models.CharField(max_length=8, unique=True, blank=True)
+    slug = models.SlugField(max_length=8, blank=True)
+    sudah_checkin = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = 'Pendaftaran'
+        verbose_name_plural = 'Pendaftaran'
+        unique_together = ('event', 'tamu')
+
     def save(self, *args, **kwargs):
         # Check if an old QR code exists and delete it
         if self.qr_code:
@@ -69,7 +105,7 @@ class Tamu(models.Model):
         #Save ke memory
         buffer = BytesIO()
         canvas.save(buffer, format='PNG')
-        file_name = f'qr_code_{self.instansi}_{self.nama}_{self.slug}.png'
+        file_name = f'qr_{self.event.id}_{self.tamu.slug}.png'
 
         #Save ke DB
         self.qr_code.save(file_name, File(buffer), save=False)
@@ -78,4 +114,4 @@ class Tamu(models.Model):
 
 class CheckIn(models.Model):
     waktu = models.DateTimeField(auto_now_add=True)
-    tamu = models.ForeignKey(Tamu, on_delete=models.CASCADE)
+    pendaftaran = models.ForeignKey(Registrasi, on_delete=models.CASCADE)

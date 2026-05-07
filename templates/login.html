@@ -19,11 +19,11 @@
       .bd-placeholder-img {
         font-size: 1.125rem;
         text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
       }
-
+      body { background-color: #f1f8f4; }
+      .form-signin { 
+        background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      }
       @media (min-width: 768px) {
         .bd-placeholder-img-lg {
           font-size: 3.5rem;
@@ -38,31 +38,31 @@
   <body class="text-center">
 
     <main class="form-signin">
-        <div class="container">
+        <div class="container" style="max-width: 400px; margin: auto; padding-top: 10vh;">
             <form method="post" action="{% url 'login' %}" novalidate>
                 {% csrf_token %}
-                <img class="mb-4" src="{% static 'images/logo_small.png' %}" alt="">
-                <h1 class="h3 mb-3 fw-normal">Registration Booth System</h1>
+                <img class="mb-4" src="{% static 'images/logo_small.png' %}" alt="" width="72">
+                <h1 class="h4 mb-4 fw-bold" style="color: #4e8c6c;">Registration System</h1>
         
-                <div class="form-floating">
+                <div class="form-floating mb-2">
                   <input type="email" class="form-control" id="id_username" placeholder="name@example.com" name="username">
                   <label for="floatingInput">Username</label>
                 </div>
-                <div class="form-floating">
+                <div class="form-floating mb-3">
                   <input type="password" class="form-control" id="id_password" placeholder="Password" name="password">
                   <label for="floatingPassword">Password</label>
                 </div>
         
-                <div class="checkbox mb-3">
+                <div class="checkbox mb-3 text-start">
                   <label>
                     <input type="checkbox" value="remember-me"> Remember me
                   </label>
-                  {% if form.errors %}
-                  <div class="alert alert-danger">
-                      Username atau Password kamu salah. Silahkan coba kembali.
-                  </div>
-                  {% endif %}
                 </div>
+                {% if form.errors %}
+                <div class="alert alert-danger py-2 small">
+                    Login gagal. Periksa kembali akun Anda.
+                </div>
+                {% endif %}
                 <input type="hidden" name="next" value="{{ next }}">
                 <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
                 <p class="mt-5 mb-3 text-muted">riespratama &copy; 2024</p>

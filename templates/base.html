@@ -9,10 +9,62 @@
 
     <script src="https://unpkg.com/htmx.org@1.8.4"></script>
     <title>Registrasi Penerimaan Tamu</title>
+    <style>
+        :root {
+            --primary-green: #6fb98f;
+            --light-green: #f1f8f4;
+            --dark-green: #4e8c6c;
+            --text-color: #334155;
+        }
+        body {
+            background-color: #f8faf9;
+            color: var(--text-color);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        .navbar {
+            background-color: #ffffff !important;
+            border-bottom: 2px solid var(--primary-green);
+        }
+        .navbar-brand img {
+            transition: transform 0.3s ease;
+        }
+        .navbar-brand:hover img {
+            transform: scale(1.1);
+        }
+        .btn-primary, .bg-primary {
+            background-color: var(--primary-green) !important;
+            border-color: var(--primary-green) !important;
+        }
+        .btn-primary:hover {
+            background-color: var(--dark-green) !important;
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+        }
+        .card-header {
+            border-radius: 12px 12px 0 0 !important;
+            font-weight: 600;
+        }
+        /* Form Controls styling */
+        input, select, textarea {
+            border-radius: 8px !important;
+            border: 1px solid #dee2e6 !important;
+            padding: 0.6rem 0.75rem !important;
+        }
+        /* Style untuk baris yang sudah check-in */
+        .row-checked-in {
+            background-color: #d3e2d4 !important;
+            color: #2e7d32;
+        }
+        .table thead {
+            background-color: var(--light-green);
+        }
+    </style>
 </head>
 <body>
     <!-- Menu navigasi mulai dari sini -->
-    <nav class="navbar navbar-expand-lg navbar-light shadow-sm " >
+    <nav class="navbar navbar-expand-lg navbar-light shadow-sm sticky-top">
         <div class="container-fluid">
           <a class="navbar-brand" href="{% url 'scanner' %}"><img src="{% static 'images/logo_small.png' %}" width="40" height="40""></a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +95,15 @@
                   <li><a class="dropdown-item" href="#">Riwayat Tamu</a></li>
                   <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="{% url 'list-tamu' %}">List Tamu</a></li>
+                </ul>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownEvent" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Kelola Event
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownEvent">
+                  <li><a class="dropdown-item" href="{% url 'event-create' %}">Tambah Event</a></li>
+                  <li><a class="dropdown-item" href="{% url 'event-list' %}">Daftar Event</a></li>
                 </ul>
               </li>
               <li class="nav-item dropdown">
