@@ -5,6 +5,7 @@
                 <th>No.</th>
                 <th>Nama</th>
                 <th>Instansi</th>
+                <th>Event</th>
                 <th>Meja</th>
                 <th class="text-center">Status</th>
             </tr>
@@ -12,8 +13,9 @@
     {% for tamu in tamu_list %}
         <tr class="{% if tamu.sudah_checkin %}row-checked-in{% endif %}">
             <td>{{ forloop.counter }}</td>
-            <td><a href="{% url 'checkin' tamu.slug %}" class="text-decoration-none fw-bold">{{ tamu.nama }}</a></td>
-            <td>{{ tamu.instansi }}</td>
+            <td><a href="{% url 'checkin' tamu.slug %}" class="text-decoration-none fw-bold">{{ tamu.tamu.nama }}</a></td>
+            <td>{{ tamu.tamu.instansi }}</td>
+            <td>{{ tamu.event.nama }}</td>
             <td><span class="badge bg-secondary">{{ tamu.meja }}</span></td>
             <td class="text-center">{{ tamu.sudah_checkin|yesno:"✅ Sudah,❌ Belum" }}</td>
         </tr>

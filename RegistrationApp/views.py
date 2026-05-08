@@ -15,11 +15,11 @@ redirect_authenticated_user = True
 
 class RegistrationLoginView(LoginView):
     template_name = 'login.html'
-    success_url = '/'
+    success_url = 'event-list'
 
 class RegistrationLogoutView(LogoutView):
     template_name = 'login.html'
-    next_page = '/'
+    next_page = 'event-list'
 
 class Scanner(LoginRequiredMixin, TemplateView):
     login_url = 'login'
@@ -27,20 +27,29 @@ class Scanner(LoginRequiredMixin, TemplateView):
 
 class CheckInView(LoginRequiredMixin, UpdateView):
     login_url = 'login'
-    model = Tamu
+    model = Registrasi
     template_name = 'check_in_createview.html'
-    fields = ['event', 'instansi', 'nama', 'meja', 'sudah_checkin']
+    fields = ['sudah_checkin']
     success_url = '../'
+    
+    def get_object(self, queryset=None):
+        # Mengambil objek Registrasi beserta data tamu, meja, dan event terkait
+        return get_object_or_404(Registrasi.objects.select_related('tamu', 'meja', 'event'), slug=self.kwargs['slug'])
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # Ini akan memaksa checkbox jadi True saat halaman edit dibuka,
+        # meskipun di database sebelumnya nilainya False.
+        form.initial['sudah_checkin'] = True
+        form.fields['sudah_checkin'].widget = forms.HiddenInput()
+        form.fields['sudah_checkin'].label = ""
+        return form
 
     def get_absolute_url(self):
         return reverse_lazy('checkin', kwargs={'slug':self.slug})
 
     def get_initial(self): #digunakan untuk memberikan nilai default di form    
-        tamu = get_object_or_404(Tamu, slug=self.kwargs.get('slug'))
-        #user = self.request.user.id
-        return {
-            'tamu':tamu,
-        }
+        return super().get_initial()
     
     def get_context_data(self, **kwargs): #digunakan untuk mengambil url dan mengirimkan nilainya ke template
         context = super().get_context_data(**kwargs)
@@ -50,12 +59,18 @@ class CheckInView(LoginRequiredMixin, UpdateView):
     
 class TamuListView(LoginRequiredMixin, ListView):
     login_url = 'login'
-    model = Tamu
+    model = Registrasi
     template_name = 'tamu_listview.html'
-    fields = '__all__'
+    context_object_name = 'tamu_list'
+
+class TamuEditListView(LoginRequiredMixin, ListView):
+    login_url = 'login'
+    model = Registrasi
+    template_name = 'tamu_list_edit.html'
+    context_object_name = 'tamu_list_edit'
 
 def tamu_update_view(request):
-    tamu_list = Tamu.objects.all().order_by('-sudah_checkin')
+    tamu_list = Registrasi.objects.all().select_related('tamu', 'meja').order_by('-sudah_checkin')
     return render(request, 'tamu_list_update.html', {'tamu_list': tamu_list})
 
 class RegistrasiForm(forms.ModelForm):
@@ -111,6 +126,13 @@ class TamuCreateView(LoginRequiredMixin, CreateView):
         if event_id:
             return reverse_lazy('event-detail', kwargs={'pk': event_id})
         return self.success_url
+    
+class TamuUpdateView(LoginRequiredMixin, UpdateView):
+    model = Tamu
+    fields = ['nama', 'instansi']
+    template_name = 'tamu_form.html' # Gunakan template form yang sudah ada
+    success_url = reverse_lazy('list-tamu-edit')
+
 
 class MejaCreateView(LoginRequiredMixin, CreateView):
     login_url = 'login'
@@ -124,7 +146,7 @@ class EventCreateView(LoginRequiredMixin, CreateView):
     model = Event
     template_name = 'event_form.html'
     fields = ['nama', 'tanggal', 'jam', 'cover']
-    success_url = reverse_lazy('list-tamu')
+    success_url = reverse_lazy('event-list')
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -143,7 +165,7 @@ class EventUpdateView(LoginRequiredMixin, UpdateView):
     model = Event
     template_name = 'event_form.html'
     fields = ['nama', 'tanggal', 'jam', 'cover']
-    success_url = reverse_lazy('list-tamu')
+    success_url = reverse_lazy('event-list')
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

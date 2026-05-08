@@ -34,6 +34,7 @@
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
+                            <th>No.</th>
                             <th>Nama</th>
                             <th>Instansi</th>
                             <th>Meja</th>
@@ -41,13 +42,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for tamu in event.tamu_list.all %}
-                        <tr class="{% if tamu.sudah_checkin %}row-checked-in{% endif %}">
-                            <td class="fw-bold">{{ tamu.nama|default:"-" }}</td>
-                            <td>{{ tamu.instansi }}</td>
-                            <td><span class="badge bg-info text-dark">Meja {{ tamu.meja.nomor_meja }}</span></td>
+                        {% for reg in event.pendaftaran_list.all %}
+                        <tr class="{% if reg.sudah_checkin %}row-checked-in{% endif %}">
+                            <td>{{ forloop.counter }}</td>
+                            <td class="fw-bold">{{ reg.tamu.nama|default:"-" }}</td>
+                            <td>{{ reg.tamu.instansi }}</td>
+                            <td><span class="badge bg-info text-dark">Meja {{ reg.meja.nomor_meja }}</span></td>
                             <td>
-                                {% if tamu.sudah_checkin %}
+                                {% if reg.sudah_checkin %}
                                 <span class="badge bg-success">Sudah Hadir</span>
                                 {% else %}
                                 <span class="badge bg-warning text-dark">Belum Hadir</span>

@@ -54,8 +54,6 @@ class Meja(models.Model):
         return f"Meja nomor {self.nomor_meja} "
 
 class Tamu(models.Model):
-    meja = models.ForeignKey(Meja, on_delete=models.SET_NULL, null=True, blank=True)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     instansi = models.CharField(max_length=128, null=True, blank=True)
     nama = models.CharField(max_length=128, null=True, blank=True)
 
@@ -70,7 +68,7 @@ class Tamu(models.Model):
 class Registrasi(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='pendaftaran_list')
     tamu = models.ForeignKey(Tamu, on_delete=models.CASCADE, related_name='riwayat_event')
-    meja = models.ForeignKey(Meja, on_delete=models.CASCADE)
+    meja = models.ForeignKey(Meja, on_delete=models.CASCADE, null=True, blank=True)
     qr_code = models.ImageField(upload_to="qr_codes/", blank=True)
     rand_code = models.CharField(max_length=8, unique=True, blank=True)
     slug = models.SlugField(max_length=8, blank=True)
@@ -105,7 +103,7 @@ class Registrasi(models.Model):
         #Save ke memory
         buffer = BytesIO()
         canvas.save(buffer, format='PNG')
-        file_name = f'qr_{self.event.id}_{self.tamu.slug}.png'
+        file_name = f'qr_{self.event.id}_{self.slug}.png'
 
         #Save ke DB
         self.qr_code.save(file_name, File(buffer), save=False)

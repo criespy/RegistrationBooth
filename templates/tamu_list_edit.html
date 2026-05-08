@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <h2>Daftar Tamu</h2>
+    <div class="table-responsive mt-3">
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Nama</th>
+                <th>Instansi</th>
+                <th>Event</th>
+                <th>Meja</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for reg in tamu_list_edit %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>
+                    <a href="{% url 'tamu-edit' reg.tamu.id %}" class="text-decoration-none fw-bold text-primary">
+                        {{ reg.tamu.nama }}
+                    </a>
+                </td>
+                <td>{{ reg.tamu.instansi|default:"-" }}</td>
+                <td>{{ reg.event.nama }}</td>
+                <td><span class="badge bg-secondary">{{ reg.meja.nomor_meja|default:"-" }}</span></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}
+

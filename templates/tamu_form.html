@@ -6,7 +6,7 @@
         <div class="col-md-6">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Input Tamu Baru</h4>
+                    <h4 class="mb-0">Input Data Tamu</h4>
                 </div>
                 <div class="card-body">
                     <form method="POST">
@@ -30,7 +30,7 @@
                         
                         <div class="d-grid gap-2 mt-4">
                             <button type="submit" class="btn btn-primary btn-lg">Simpan Tamu</button>
-                            <a href="{% url 'list-tamu' %}" class="btn btn-light">Batal</a>
+                            <a href="{{ request.META.HTTP_REFERER|default:'#' }}" class="btn btn-light">Batal</a>
                         </div>
                     </form>
                 </div>
