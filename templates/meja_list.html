@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-dark">Daftar Meja Tamu</h2>
+        <a href="{% url 'meja-create' %}" class="btn btn-primary shadow-sm">
+            <i class="fas fa-plus"></i> Tambah Meja Baru
+        </a>
+    </div>
+
+    <div class="card shadow border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="tableApar" class="table table-hover w-100">
+                    <thead>
+                        <tr>
+                            <th width="50">No</th>
+                            <th>Nama Event</th>
+                            <th>Nomor Meja</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for meja in meja_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ meja.event.nama }}</td>
+                            <td><span class="badge bg-info text-dark">Meja {{ meja.nomor_meja }}</span></td>
+                        </tr>
+                        {% empty %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

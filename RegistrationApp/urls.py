@@ -14,6 +14,7 @@ urlpatterns = [
     path('tamu-create/', views.TamuCreateView.as_view(), name='tamu-create'),
     path('tamu-create/event/<int:event_id>/', views.TamuCreateView.as_view(), name='tamu-create-with-event'),
     path('meja-create/', views.MejaCreateView.as_view(), name='meja-create'),
+    path('meja-list/', views.MejaListView.as_view(), name='meja-list'),
     path('event-create/', views.EventCreateView.as_view(), name='event-create'),
     path('event-update/<int:pk>/', views.EventUpdateView.as_view(), name='event-update'),
     path('event-detail/<int:pk>/', views.EventDetailView.as_view(), name='event-detail'),

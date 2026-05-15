@@ -5,7 +5,7 @@ class TamuAdmin(admin.ModelAdmin):
     list_display = ('nama', 'instansi')
 
 class RegistrasiAdmin(admin.ModelAdmin):
-    list_display = ('event', 'tamu', 'meja', 'sudah_checkin')
+    list_display = ('event', 'tamu', 'meja', 'peserta', 'sudah_checkin')
 
 admin.site.register(Event)
 admin.site.register(Meja)
