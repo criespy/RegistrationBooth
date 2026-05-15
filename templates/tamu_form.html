@@ -1,5 +1,28 @@
 {% extends 'base.html' %}
 
+{% block extra_css %}
+<style>
+    #id_event {
+        list-style-type: none;
+        padding-left: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        border: 1px solid #dee2e6;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #fff;
+    }
+    #id_event li label {
+        cursor: pointer;
+        font-weight: normal;
+    }
+    #id_event input[type="checkbox"] {
+        margin-right: 8px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <div class="card shadow">

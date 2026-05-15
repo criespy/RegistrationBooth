@@ -6,6 +6,7 @@ from django.views.generic import TemplateView, CreateView, UpdateView, ListView,
 from .models import *
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponseRedirect, Http404
 import os
 import logging
 
@@ -87,29 +88,35 @@ class RegistrasiForm(forms.ModelForm):
     )
     nama = forms.CharField(max_length=128, required=False, label="Nama (Tamu Baru)")
     instansi = forms.CharField(max_length=128, required=False, label="Instansi (Tamu Baru)")
+    event = forms.ModelMultipleChoiceField(
+        queryset=Event.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        label="Pilih Event"
+    )
 
     class Meta:
         model = Registrasi
-        fields = ['event', 'tamu', 'meja', 'peserta', 'sudah_checkin']
+        fields = ['tamu', 'meja', 'peserta', 'sudah_checkin']
 
     def clean(self):
         cleaned_data = super().clean()
         tamu = cleaned_data.get('tamu')
         nama = cleaned_data.get('nama')
         instansi = cleaned_data.get('instansi')
-        event = cleaned_data.get('event')
+        events = cleaned_data.get('event')
 
         if not tamu and (not nama or not instansi):
             raise forms.ValidationError("Pilih tamu dari daftar atau masukkan data tamu baru (Nama & Instansi).")
 
         # Cek apakah tamu sudah terdaftar di event ini (baik melalui pilihan dropdown atau input manual)
         check_tamu = tamu or Tamu.objects.filter(nama=nama, instansi=instansi).first()
-        if check_tamu and event:
-            qs = Registrasi.objects.filter(event=event, tamu=check_tamu)
+        if check_tamu and events:
+            qs = Registrasi.objects.filter(event__in=events, tamu=check_tamu)
             if self.instance.pk:
                 qs = qs.exclude(pk=self.instance.pk)
             if qs.exists():
-                raise forms.ValidationError(f"Tamu ini sudah terdaftar di event {event.nama}.")
+                event_names = ", ".join([r.event.nama for r in qs])
+                raise forms.ValidationError(f"Tamu ini sudah terdaftar di event: {event_names}.")
             
         return cleaned_data
 
@@ -133,13 +140,27 @@ class TamuCreateView(LoginRequiredMixin, CreateView):
         # Pastikan tamu memiliki slug (terutama untuk data lama yang diambil dari dropdown)
         if form.instance.tamu and not form.instance.tamu.slug:
             form.instance.tamu.save()
-        return super().form_valid(form)
+
+        # Ambil data dari form
+        tamu = form.instance.tamu
+        events = form.cleaned_data.get('event')
+        meja = form.cleaned_data.get('meja')
+        peserta = form.cleaned_data.get('peserta')
+
+        # Buat pendaftaran untuk setiap event yang dipilih
+        for event in events:
+            Registrasi.objects.get_or_create(
+                event=event,
+                tamu=tamu,
+                defaults={'meja': meja, 'peserta': peserta}
+            )
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_initial(self):
         initial = super().get_initial()
         event_id = self.kwargs.get('event_id')
         if event_id:
-            initial['event'] = get_object_or_404(Event, pk=event_id)
+            initial['event'] = [get_object_or_404(Event, pk=event_id)]
         initial['sudah_checkin'] = False
         return initial
 
@@ -172,12 +193,14 @@ class TamuUpdateView(LoginRequiredMixin, UpdateView):
         if self.object.tamu:
             initial['nama'] = self.object.tamu.nama
             initial['instansi'] = self.object.tamu.instansi
+        if self.object.event:
+            initial['event'] = [self.object.event.pk]
         return initial
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         # Saat update, kunci field event dan sembunyikan field tamu/checkin
-        form.fields['event'].disabled = True
+        #form.fields['event'].disabled = True
         form.fields['tamu'].widget = forms.HiddenInput()
         form.fields['sudah_checkin'].widget = forms.HiddenInput()
         form.fields['sudah_checkin'].label = ""
@@ -189,7 +212,23 @@ class TamuUpdateView(LoginRequiredMixin, UpdateView):
         tamu.nama = form.cleaned_data.get('nama')
         tamu.instansi = form.cleaned_data.get('instansi')
         tamu.save()
-        return super().form_valid(form)
+
+        events = list(form.cleaned_data.get('event'))
+        if events:
+            # Update data registrasi saat ini (ID yang sedang diedit)
+            self.object.event = events[0]
+            self.object.meja = form.cleaned_data.get('meja')
+            self.object.peserta = form.cleaned_data.get('peserta')
+            self.object.save()
+
+            # Tambahkan registrasi baru untuk event lain jika dipilih
+            for event in events[1:]:
+                Registrasi.objects.get_or_create(
+                    event=event,
+                    tamu=tamu,
+                    defaults={'meja': self.object.meja, 'peserta': self.object.peserta}
+                )
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class MejaCreateView(LoginRequiredMixin, CreateView):
