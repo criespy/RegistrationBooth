@@ -2,7 +2,8 @@ from django.contrib import admin
 from .models import *
 
 class TamuAdmin(admin.ModelAdmin):
-    list_display = ('nama', 'instansi')
+    list_display = ('nama', 'instansi', 'rand_code')
+    list_filter = ('nama', 'instansi', 'rand_code')
     search_fields = ('nama', 'instansi')
 
 class RegistrasiInline(admin.TabularInline):
