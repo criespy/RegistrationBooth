@@ -78,7 +78,11 @@ class Tamu(models.Model):
 
         # Isi rand_code dan slug jika belum ada
         if not self.rand_code:
-            self.rand_code = str(generate_random_number())
+            while True:
+                new_code = str(generate_random_number())
+                if not Tamu.objects.filter(rand_code=new_code).exists():
+                    self.rand_code = new_code
+                    break
         if not self.slug:
             self.slug = slugify(self.rand_code)
 
