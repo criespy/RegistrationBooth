@@ -42,6 +42,7 @@
                         </div>
                         <p class="mt-2 mb-0 fw-bold">ID: {{ object.tamu.rand_code }}</p>
                         <small class="text-muted">Yth: <span class="text-dark fw-bold">{{ object.tamu.nama }}</span></small>
+                        <small class="text-muted">Nomor meja: <span class="text-dark fw-bold">{{ object.meja.nomor_meja|default:"-" }}</span></small>
                     {% else %}
                         <div class="alert alert-warning">QR Code belum digenerate.</div>
                     {% endif %}
