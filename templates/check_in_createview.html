@@ -13,6 +13,10 @@
         {% endif %}
         </div>
         <div class="card-body p-4">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.sudah_checkin }}
+
             <div class="row mb-3">
                 <label class="col-sm-3 col-form-label fw-bold">Nama Tamu</label>
                 <div class="col-sm-9">
@@ -26,9 +30,12 @@
                 </div>
             </div>
             <div class="row mb-3">
-                <label class="col-sm-3 col-form-label fw-bold">Event</label>
+                <label class="col-sm-3 col-form-label fw-bold">Pilih Event</label>
                 <div class="col-sm-9">
-                    <p class="form-control-plaintext border-bottom">{{ object.event.nama }}</p>
+                    {{ form.event }}
+                    {% if form.event.errors %}
+                        <div class="invalid-feedback d-block">{{ form.event.errors }}</div>
+                    {% endif %}
                 </div>
             </div>
             <div class="row mb-3">
@@ -42,10 +49,6 @@
 
             <hr class="my-4">
 
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                     <a href="{% url 'scanner' %}" class="btn btn-outline-secondary">Batal</a>
                     <button type="submit" class="btn btn-primary px-5">

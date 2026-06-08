@@ -30,15 +30,14 @@ class CheckInView(LoginRequiredMixin, UpdateView):
     login_url = 'login'
     model = Registrasi
     template_name = 'check_in_createview.html'
-    fields = ['sudah_checkin']
+    fields = ['event', 'sudah_checkin']
     success_url = '../'
     
     def get_object(self, queryset=None):
-        # Cari registrasi berdasarkan slug yang sekarang ada di model Tamu
-        # Mengambil registrasi terbaru (misal: event dengan tanggal paling baru)
+        # Cari registrasi tamu, prioritaskan yang belum check-in
         obj = Registrasi.objects.select_related('tamu', 'event').filter(
             tamu__slug=self.kwargs['slug']
-        ).order_by('-event__tanggal').first()
+        ).order_by('sudah_checkin', '-event__tanggal').first()
         
         if not obj:
             raise Http404("Data pendaftaran tidak ditemukan.")
@@ -46,12 +45,30 @@ class CheckInView(LoginRequiredMixin, UpdateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
+        if self.object and self.object.tamu:
+            # Filter pilihan event hanya untuk yang didaftarkan oleh tamu ini
+            form.fields['event'].queryset = Event.objects.filter(
+                pendaftaran_list__tamu=self.object.tamu
+            )
+            form.fields['event'].widget.attrs.update({'class': 'form-select'})
+            form.fields['event'].label = "Pilih Event untuk Check-in"
+
         # Ini akan memaksa checkbox jadi True saat halaman edit dibuka,
         # meskipun di database sebelumnya nilainya False.
         form.initial['sudah_checkin'] = True
         form.fields['sudah_checkin'].widget = forms.HiddenInput()
         form.fields['sudah_checkin'].label = ""
         return form
+
+    def form_valid(self, form):
+        # Ambil event yang dipilih dari dropdown
+        selected_event = form.cleaned_data.get('event')
+        tamu = self.object.tamu
+        
+        # Update status check-in pada record registrasi yang tepat sesuai pilihan event
+        Registrasi.objects.filter(tamu=tamu, event=selected_event).update(sudah_checkin=True)
+        
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_initial(self): #digunakan untuk memberikan nilai default di form    
         return super().get_initial()
