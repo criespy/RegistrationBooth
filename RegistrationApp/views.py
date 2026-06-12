@@ -30,7 +30,7 @@ class CheckInView(LoginRequiredMixin, UpdateView):
     login_url = 'login'
     model = Registrasi
     template_name = 'check_in_createview.html'
-    fields = ['event', 'sudah_checkin']
+    fields = ['event', 'meja', 'sudah_checkin']
     success_url = '../'
     
     def get_object(self, queryset=None):
@@ -53,6 +53,11 @@ class CheckInView(LoginRequiredMixin, UpdateView):
             form.fields['event'].widget.attrs.update({'class': 'form-select'})
             form.fields['event'].label = "Pilih Event untuk Check-in"
 
+            # Filter pilihan meja agar hanya muncul meja yang terkait dengan event ini
+            form.fields['meja'].queryset = Meja.objects.filter(event=self.object.event)
+            form.fields['meja'].widget.attrs.update({'class': 'form-select'})
+            form.fields['meja'].label = "Pilih/Ubah Meja"
+
         # Ini akan memaksa checkbox jadi True saat halaman edit dibuka,
         # meskipun di database sebelumnya nilainya False.
         form.initial['sudah_checkin'] = True
@@ -63,10 +68,14 @@ class CheckInView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         # Ambil event yang dipilih dari dropdown
         selected_event = form.cleaned_data.get('event')
+        selected_meja = form.cleaned_data.get('meja')
         tamu = self.object.tamu
         
-        # Update status check-in pada record registrasi yang tepat sesuai pilihan event
-        Registrasi.objects.filter(tamu=tamu, event=selected_event).update(sudah_checkin=True)
+        # Update status check-in dan meja pada record registrasi
+        Registrasi.objects.filter(tamu=tamu, event=selected_event).update(
+            sudah_checkin=True,
+            meja=selected_meja
+        )
         
         return HttpResponseRedirect(self.get_success_url())
 
