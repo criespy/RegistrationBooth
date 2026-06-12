@@ -55,6 +55,8 @@ class CheckInView(LoginRequiredMixin, UpdateView):
 
             # Filter pilihan meja agar hanya muncul meja yang terkait dengan event ini
             form.fields['meja'].queryset = Meja.objects.filter(event=self.object.event)
+            #Keluarkan list meja tanpa filter
+            form.fields['meja'].queryset = Meja.objects.all()
             form.fields['meja'].widget.attrs.update({'class': 'form-select'})
             form.fields['meja'].label = "Pilih/Ubah Meja"
 
